@@ -37,6 +37,19 @@ func (s *Store) GetURL(args getURLArgs) (URL, error){
 	urlRow := URL{}
 	result := s.db.Where("short_code = ?", args.shortCode).First(&urlRow)
 	return urlRow, result.Error
-}//posible upgrade.. getURL only where the deletedAt is zerovalue
-func (s *Store) UpdateURL() (url URL)       { return }
-func (s *Store) DeleteURl()                 {}
+}
+
+//posible upgrade.. getURL only where the deletedAt is zerovalue
+
+// TODO: implement updateURL and DeleteURL when You implement USER model
+// func (s *Store) UpdateURL() (url URL)       { return }
+// func (s *Store) DeleteURl()                 {}
+
+
+
+
+// TODO: Implement userStore.go
+//CreateUser
+//Login
+//=====edit URL model to contain title and user generated shortcode
+//UPDATEURL should edit the title of the url, and the shortcode.
