@@ -10,7 +10,7 @@ import (
 )
 
 
-var ts *Store
+var ts Store
 
 /*
  ======================   POSSIBLE ERRORS =========================================
