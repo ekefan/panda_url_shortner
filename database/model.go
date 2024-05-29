@@ -12,7 +12,7 @@ type URL struct {
 	CreatedAt time.Time `gorm:"not null;default:CURRENT_TIMESTAMP"`
 	UpdatedAt time.Time
 	DeletedAt time.Time `gorm:"index"`
-	ShortCode string    `json:"short_code" gorm:"not null"`
+	ShortCode string    `json:"short_code" gorm:"not null; unique"`
 	LongURL   string    `json:"long_url" gorm:"not null"`
 }
 
@@ -22,4 +22,8 @@ type URL struct {
 type createURLArgs struct {
 	shortCode string
 	longURL string
+}
+
+type getURLArgs struct {
+	shortCode string
 }

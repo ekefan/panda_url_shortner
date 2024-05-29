@@ -29,9 +29,14 @@ func (s *Store) RunMigrations() {
 func (s *Store) CreateURL(args createURLArgs) (URL, error){
 	url_row := URL{ShortCode: args.shortCode, LongURL: args.longURL}
 	result := s.db.Create(&url_row)
-	fmt.Println("From line 32 of store.go: Printing new_url_row", url_row)
 	return url_row, result.Error
 }
-func (s *Store) GetURL() (url URL)          { return }
+
+//GetURL: makes a query to the database and returns the URL with short_code specified in args
+func (s *Store) GetURL(args getURLArgs) (URL, error){ 
+	urlRow := URL{}
+	result := s.db.Where("short_code = ?", args.shortCode).First(&urlRow)
+	return urlRow, result.Error
+}//posible upgrade.. getURL only where the deletedAt is zerovalue
 func (s *Store) UpdateURL() (url URL)       { return }
 func (s *Store) DeleteURl()                 {}

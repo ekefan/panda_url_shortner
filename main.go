@@ -21,6 +21,7 @@ func main() {
 
 	// run migrations create database tables if they don't exist in the db
 	s.RunMigrations()
+
 	/*
 		Couldn't separated migration process from the main code using gorm
 		db.Migrator().DropTable(&database.URL{}) //so I used this till I got the
