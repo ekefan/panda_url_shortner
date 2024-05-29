@@ -3,20 +3,8 @@ package database
 import (
 	// "gorm.io/driver/sqlite"
 	"fmt"
-	"time"
-
 	"gorm.io/gorm"
 )
-
-// URL: Model for the handling short codes and full urls
-type URL struct {
-	ID        uint      `gorm:"autoIncrement; not null"`
-	CreatedAt time.Time `gorm:"not null;default:CURRENT_TIMESTAMP"`
-	UpdatedAt time.Time
-	DeletedAt time.Time `gorm:"index"`
-	ShortCode string    `json:"short_code" gorm:"not null"`
-	LongURL   string    `json:"long_url" gorm:"not null"`
-}
 
 type Store struct {
 	db *gorm.DB
@@ -38,7 +26,12 @@ func (s *Store) RunMigrations() {
 	}
 }
 
-func (s *Store) CreateURL(shortCode string) {}
+func (s *Store) CreateURL(args createURLArgs) *URL{
+	url_row := URL{ShortCode: args.shortCode, LongURL: args.longURL}
+	s.db.Create(&url_row)
+	fmt.Println("From line 32: Printing new_url_row", url_row)
+	return &url_row
+}
 func (s *Store) GetURL() (url URL)          { return }
 func (s *Store) UpdateURL() (url URL)       { return }
 func (s *Store) DeleteURl()                 {}
