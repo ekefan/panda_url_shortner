@@ -26,11 +26,11 @@ func (s *Store) RunMigrations() {
 	}
 }
 
-func (s *Store) CreateURL(args createURLArgs) *URL{
+func (s *Store) CreateURL(args createURLArgs) (URL, error){
 	url_row := URL{ShortCode: args.shortCode, LongURL: args.longURL}
-	s.db.Create(&url_row)
-	fmt.Println("From line 32: Printing new_url_row", url_row)
-	return &url_row
+	result := s.db.Create(&url_row)
+	fmt.Println("From line 32 of store.go: Printing new_url_row", url_row)
+	return url_row, result.Error
 }
 func (s *Store) GetURL() (url URL)          { return }
 func (s *Store) UpdateURL() (url URL)       { return }
