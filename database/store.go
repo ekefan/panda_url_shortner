@@ -9,13 +9,14 @@ import (
 type Store interface{
 	CreateURL(args createURLArgs) (URL, error)
 	GetURL(args getURLArgs) (URL, error)
-	RunMigrations()
+	RunMigrations() error
 
 }
 
 type Query struct {
 	db *gorm.DB
 }
+
 
 func NewStore(db *gorm.DB) Store {
 	return &Query{
@@ -24,13 +25,17 @@ func NewStore(db *gorm.DB) Store {
 }
 
 // RunMigrations runs database migrations if the table url don't exist yet
-func (s *Query) RunMigrations() {
+func (s *Query) RunMigrations() error {
 	// check if table exists else migrate schema/model
 	check := !s.db.Migrator().HasTable(&URL{})
 	fmt.Println(check)
 	if check {
-		s.db.AutoMigrate(&URL{})
+		err := s.db.AutoMigrate(&URL{})
+		if err != nil {
+			return fmt.Errorf("could not migrate database: %s", err)
+		}
 	}
+	return nil
 }
 
 func (s *Query) CreateURL(args createURLArgs) (URL, error){
