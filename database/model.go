@@ -17,13 +17,3 @@ type URL struct {
 }
 
 
-
-//createURLArgs: struct for holding args for creating a new URL-row
-type createURLArgs struct {
-	shortCode string
-	longURL string
-}
-
-type getURLArgs struct {
-	shortCode string
-}

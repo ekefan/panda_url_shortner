@@ -6,9 +6,21 @@ import (
 	"gorm.io/gorm"
 )
 
+
+//createURLArgs: struct for holding args for creating a new URL-row
+type CreateURLArgs struct {
+	ShortCode string
+	LongURL string
+}
+
+type GetURLArgs struct {
+	ShortCode string
+}
+
+
 type Store interface{
-	CreateURL(args createURLArgs) (URL, error)
-	GetURL(args getURLArgs) (URL, error)
+	CreateURL(args CreateURLArgs) (URL, error)
+	GetURL(args GetURLArgs) (URL, error)
 	RunMigrations() error
 
 }
@@ -38,16 +50,16 @@ func (s *Query) RunMigrations() error {
 	return nil
 }
 
-func (s *Query) CreateURL(args createURLArgs) (URL, error){
-	url_row := URL{ShortCode: args.shortCode, LongURL: args.longURL}
+func (s *Query) CreateURL(args CreateURLArgs) (URL, error){
+	url_row := URL{ShortCode: args.ShortCode, LongURL: args.LongURL}
 	result := s.db.Create(&url_row)
 	return url_row, result.Error
 }
 
 //GetURL: makes a query to the database and returns the URL with short_code specified in args
-func (s *Query) GetURL(args getURLArgs) (URL, error){ 
+func (s *Query) GetURL(args GetURLArgs) (URL, error){ 
 	urlRow := URL{}
-	result := s.db.Where("short_code = ?", args.shortCode).First(&urlRow)
+	result := s.db.Where("short_code = ?", args.ShortCode).First(&urlRow)
 	return urlRow, result.Error
 }
 

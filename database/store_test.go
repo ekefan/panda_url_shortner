@@ -2,11 +2,10 @@ package database
 
 import (
 	"fmt"
-	"math/rand"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/ekefan/panda_url_shortner/util"
 )
 
 
@@ -18,46 +17,47 @@ var ts Store
  		short_code is the error when the unique code is broken
 2. 
 */
-func randomShortCode() string{
-	letters := "abcdefghijklmnopqrstuvwxyz"
-	var shortCode strings.Builder
-	for i := 0; i < 5; i++{
-		idx := rand.Intn(len(letters))
-		shortCode.WriteByte(letters[idx])
-	}
-	return shortCode.String()
-}
+
 
 func randomLongURL() string {
-	return fmt.Sprintf("https://github.com/testingMyApp/%s", randomShortCode())
+	shortCode, err := util.RandomShortCode()
+	if err != nil {
+		return ""
+	}
+	longURL := fmt.Sprintf("https://github.com/testingMyApp/%s", shortCode)
+	return longURL
 }
 
-func randomArgs() createURLArgs {
-	return createURLArgs{
-		shortCode: randomShortCode(),
-		longURL: randomLongURL(),
+func randomArgs() CreateURLArgs {
+	shortCode, _ := util.RandomShortCode()
+	// Error here... this function shoul not return createURLARgs if err shortCode is ""
+	return CreateURLArgs{
+		ShortCode: shortCode,
+		LongURL: randomLongURL(),
 	}
 }
 
+//New Test Case: Check for when shortCode is an empty string
 
-func createRandomURL(t *testing.T, args createURLArgs) (newURL URL){
+
+func createRandomURL(t *testing.T, args CreateURLArgs) (newURL URL){
 	newURL, err := ts.CreateURL(args)
 	require.NoError(t, err)
 	require.NotEmpty(t, newURL)
-	require.Equal(t, newURL.ShortCode, args.shortCode)
-	require.Equal(t, newURL.LongURL, args.longURL)
+	require.Equal(t, newURL.ShortCode, args.ShortCode)
+	require.Equal(t, newURL.LongURL, args.LongURL)
 	require.NotZero(t, newURL.ID)
 	require.NotZero(t, newURL.CreatedAt)
 	return
 }
 
 func TestCreateURL(t *testing.T) {
-	createRandomURL(t, randomArgs())
+	createRandomURL(t, randomArgs()) //A case when randomArgs returns "" shortCode
 }
 
 func TestGetURL(t *testing.T) {
 	urlRow := createRandomURL(t, randomArgs())
-	args := getURLArgs{shortCode: urlRow.ShortCode}
+	args := GetURLArgs{ShortCode: urlRow.ShortCode}
 	storedURL, err := ts.GetURL(args)
 	require.NoError(t, err)
 	require.NotEmpty(t, storedURL)

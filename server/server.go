@@ -40,9 +40,13 @@ func (s *Server) StartServer(port string) error {
 
 
 func (s *Server) SetupRouter() {
-	router := gin.Default()
+	newRouter := gin.Default()
 
-	router.POST("/new", s.shortenURL)
-	router.GET("/:short_code", s.goToURL)
+	newRouter.POST("/new", s.shortenURL)
+	newRouter.GET("/:short_code", s.goToURL)
+
+	s.router = newRouter
 
 }
+
+
