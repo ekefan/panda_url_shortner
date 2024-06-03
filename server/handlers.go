@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/ekefan/panda_url_shortner/database"
 	"github.com/ekefan/panda_url_shortner/util"
@@ -56,12 +57,28 @@ func (s *Server) shortenURL(ctx *gin.Context) {
 
 
 type GoToURLReq struct {
-	ShortCode string `json:"short_code" binding:"required"`
+	ShortCode string `uri:"short_code" binding:"required"`
 }
 
 func (s *Server) goToURL(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{"err": "no error"})
+	var req GoToURLReq
+	//bind the uri to get the shortCode from the request uri
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	//make call to the database to retrieve long url
+	arg := database.GetURLArgs{
+		ShortCode: req.ShortCode,
+	}
+	dbURL, err := s.store.GetURL(arg)
+	if err != nil {
+		if strings.Contains(err.Error(), "record not found") {
+			ctx.JSON(http.StatusBadRequest, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.Redirect(http.StatusMovedPermanently, dbURL.LongURL)
 }
-
-
-///Stopped at handling server request for creating new shortcode  and redirecting incomming one.
