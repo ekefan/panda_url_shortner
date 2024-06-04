@@ -10,15 +10,25 @@ import (
 )
 
 
-func TestMain(m *testing.M){
-	db, err := gorm.Open(sqlite.Open("./../test.db"), &gorm.Config{
-	})
-	if err != nil {
-		log.Fatal("Couldn't connect to database: ", err)
-	}
+func TestMain(m *testing.M) {
+    dbConn, err := gorm.Open(sqlite.Open("./../test.db"), &gorm.Config{})
+    if err != nil {
+        log.Fatal("Couldn't connect to database: ", err)
+    }
 
-	ts = NewStore(db)
-	ts.RunMigrations(db)
-	os.Exit(m.Run())
-	
+    ts := NewStore(dbConn)
+    if err := ts.RunMigrations(dbConn); err != nil {
+        log.Fatal("Failed to run migrations: ", err)
+    }
+
+    // Run tests
+    exitCode := m.Run()
+
+    // Close database connection
+    sqlDB, _ := dbConn.DB()
+    sqlDB.Close()
+
+    // Exit with the appropriate exit code
+    os.Exit(exitCode)
 }
+

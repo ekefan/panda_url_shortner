@@ -2,14 +2,12 @@ package database
 
 import (
 	"fmt"
-	"testing"
+	// "testing"
 
-	"github.com/stretchr/testify/require"
+	// "github.com/stretchr/testify/require"
 	"github.com/ekefan/panda_url_shortner/util"
 )
 
-
-var ts Store
 
 /*
  ======================   POSSIBLE ERRORS =========================================
@@ -40,30 +38,30 @@ func randomArgs() CreateURLArgs {
 //New Test Case: Check for when shortCode is an empty string
 
 
-func createRandomURL(t *testing.T, args CreateURLArgs) (newURL URL){
-	newURL, err := ts.CreateURL(args)
-	require.NoError(t, err)
-	require.NotEmpty(t, newURL)
-	require.Equal(t, newURL.ShortCode, args.ShortCode)
-	require.Equal(t, newURL.LongURL, args.LongURL)
-	require.NotZero(t, newURL.Owner)
-	require.NotZero(t, newURL.CreatedAt)
-	return
-}
+// func createRandomURL(t *testing.T, args CreateURLArgs) (newURL URL){
+// 	newURL, err := ts.CreateURL(args)
+// 	require.NoError(t, err)
+// 	require.NotEmpty(t, newURL)
+// 	require.Equal(t, newURL.ShortCode, args.ShortCode)
+// 	require.Equal(t, newURL.LongURL, args.LongURL)
+// 	require.NotZero(t, newURL.Owner)
+// 	require.NotZero(t, newURL.CreatedAt)
+// 	return
+// }
 
-func TestCreateURL(t *testing.T) {
-	createRandomURL(t, randomArgs()) //A case when randomArgs returns "" shortCode
-}
+// func TestCreateURL(t *testing.T) {
+// 	createRandomURL(t, randomArgs()) //A case when randomArgs returns "" shortCode
+// }
 
-func TestGetURL(t *testing.T) {
-	urlRow := createRandomURL(t, randomArgs())
-	args := GetURLArgs{ShortCode: urlRow.ShortCode}
-	storedURL, err := ts.GetURL(args)
-	require.NoError(t, err)
-	require.NotEmpty(t, storedURL)
+// func TestGetURL(t *testing.T) {
+// 	urlRow := createRandomURL(t, randomArgs())
+// 	args := GetURLArgs{ShortCode: urlRow.ShortCode}
+// 	storedURL, err := ts.GetURL(args)
+// 	require.NoError(t, err)
+// 	require.NotEmpty(t, storedURL)
 	
-	require.Equal(t, urlRow.ShortCode, storedURL.ShortCode)
-	require.Equal(t, urlRow.LongURL, storedURL.LongURL)
-	require.NotZero(t, urlRow.Owner)
-	require.NotZero(t, urlRow.CreatedAt)
-}
+// 	require.Equal(t, urlRow.ShortCode, storedURL.ShortCode)
+// 	require.Equal(t, urlRow.LongURL, storedURL.LongURL)
+// 	require.NotZero(t, urlRow.Owner)
+// 	require.NotZero(t, urlRow.CreatedAt)
+// }

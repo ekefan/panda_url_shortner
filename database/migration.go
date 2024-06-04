@@ -13,6 +13,7 @@ func (s *Query) RunMigrations(db *gorm.DB) error {
 	hasUser := s.db.Migrator().HasTable(&URL{})
 	hasURL := s.db.Migrator().HasTable(&USER{})
 	if hasUser && hasURL {
+		fmt.Println("not now")
 		return nil
 	}
     sqlDB, err := db.DB()
@@ -26,7 +27,7 @@ func (s *Query) RunMigrations(db *gorm.DB) error {
     }
 
     m, err := migrate.NewWithDatabaseInstance(
-        "file://database/migrations",
+        "file://database/migrations", //for  testing adjust
         "sqlite", driver)
     if err != nil {
         return fmt.Errorf("could not create migrate instance: %v", err)
