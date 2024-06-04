@@ -46,7 +46,7 @@ func createRandomURL(t *testing.T, args CreateURLArgs) (newURL URL){
 	require.NotEmpty(t, newURL)
 	require.Equal(t, newURL.ShortCode, args.ShortCode)
 	require.Equal(t, newURL.LongURL, args.LongURL)
-	require.NotZero(t, newURL.ID)
+	require.NotZero(t, newURL.Owner)
 	require.NotZero(t, newURL.CreatedAt)
 	return
 }
@@ -64,6 +64,6 @@ func TestGetURL(t *testing.T) {
 	
 	require.Equal(t, urlRow.ShortCode, storedURL.ShortCode)
 	require.Equal(t, urlRow.LongURL, storedURL.LongURL)
-	require.NotZero(t, urlRow.ID)
+	require.NotZero(t, urlRow.Owner)
 	require.NotZero(t, urlRow.CreatedAt)
 }

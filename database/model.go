@@ -8,12 +8,18 @@ import (
 
 // URL: Model for the handling short codes and full urls
 type URL struct {
-	ID        uint      `gorm:"primaryKey; autoIncrement; not null"`
-	CreatedAt time.Time `gorm:"not null;default:CURRENT_TIMESTAMP"`
+	Owner        uint
+	ShortCode string 
+	LongURL   string 
+	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt time.Time `gorm:"index"`
-	ShortCode string    `json:"short_code" gorm:"not null; unique"`
-	LongURL   string    `json:"long_url" gorm:"not null"`
+
 }
 
-
+type USER struct {
+	ID uint
+	Name string
+	Email string
+	Password string
+	CreatedAt string
+}

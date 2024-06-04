@@ -18,7 +18,7 @@ func TestMain(m *testing.M){
 	}
 
 	ts = NewStore(db)
-	ts.RunMigrations()
+	ts.RunMigrations(db)
 	os.Exit(m.Run())
 	
 }

@@ -2,7 +2,6 @@ package database
 
 import (
 	// "gorm.io/driver/sqlite"
-	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -21,7 +20,7 @@ type GetURLArgs struct {
 type Store interface{
 	CreateURL(args CreateURLArgs) (URL, error)
 	GetURL(args GetURLArgs) (URL, error)
-	RunMigrations() error
+	RunMigrations(db *gorm.DB) error
 
 }
 
@@ -37,19 +36,6 @@ func NewStore(db *gorm.DB) Store {
 }
 
 // RunMigrations runs database migrations if the table url don't exist yet
-func (s *Query) RunMigrations() error {
-	// check if table exists else migrate schema/model
-	check := !s.db.Migrator().HasTable(&URL{})
-	fmt.Println(check)
-	if check {
-		err := s.db.AutoMigrate(&URL{})
-		if err != nil {
-			return fmt.Errorf("could not migrate database: %s", err)
-		}
-	}
-	return nil
-}
-
 func (s *Query) CreateURL(args CreateURLArgs) (URL, error){
 	url_row := URL{ShortCode: args.ShortCode, LongURL: args.LongURL}
 	result := s.db.Create(&url_row)

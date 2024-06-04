@@ -21,7 +21,7 @@ func NewServer() *Server{
 		log.Fatal("error connecting with database", err)
 	}
 	s := database.NewStore(dbConn)
-	err = s.RunMigrations()
+	err = s.RunMigrations(dbConn)
 	if err != nil {
 		log.Fatal(err)
 	}
