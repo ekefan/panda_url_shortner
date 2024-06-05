@@ -15,7 +15,7 @@ func randomEmail() (email string) {
 	return
 }
 
-func createRandomUser(t *testing.T) {
+func createRandomUser(t *testing.T) USER {
 	name, err := util.RandomShortCode(6)
 	require.NoError(t, err)
 	require.NotEmpty(t, name)
@@ -38,10 +38,25 @@ func createRandomUser(t *testing.T) {
 	require.Equal(t, args.Email, user.Email)
 	require.Equal(t, args.Name, user.Name)
 	require.Equal(t, args.HashedPassword, user.Password)
+	return user
 }
 
 func TestCreateUser(t *testing.T) {
-	createRandomUser(t)
+	createRandomUser(t) //correctUSer
+	
 }
 
+func TestGetUser(t *testing.T) {
+	usr := createRandomUser(t)
 
+	args := GetUserArgs{
+		Name: usr.Name,
+	}
+	user, err := ts.GetUser(args)
+	require.NoError(t, err)
+	require.NotEmpty(t, user)
+	require.Equal(t, usr.Name, user.Name)
+	require.Equal(t, usr.Email, user.Email)
+	require.Equal(t, usr.Password, user.Password)
+	require.Equal(t, usr.CreatedAt, user.CreatedAt)
+}
