@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
+/// When creating the first github actions set Run Migrations to take path to file from env
 func (s *Query) RunMigrations(db *gorm.DB) error {
 	hasUser := s.db.Migrator().HasTable(&URL{})
 	hasURL := s.db.Migrator().HasTable(&USER{})
@@ -27,7 +28,7 @@ func (s *Query) RunMigrations(db *gorm.DB) error {
     }
 
     m, err := migrate.NewWithDatabaseInstance(
-        "file://database/migrations", //for  testing adjust
+        "file://migrations", //for  testing adjust
         "sqlite", driver)
     if err != nil {
         return fmt.Errorf("could not create migrate instance: %v", err)

@@ -7,6 +7,8 @@ type Store interface{
 	CreateURL(args CreateURLArgs) (URL, error)
 	GetURL(args GetURLArgs) (URL, error)
 	RunMigrations(db *gorm.DB) error
+	CreateUser(args CreateUserArgs) (USER, error)
+	GetUser(args GetUserArgs) (USER, error)
 
 }
 

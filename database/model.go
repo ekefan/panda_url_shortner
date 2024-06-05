@@ -7,17 +7,17 @@ import (
 
 // URL: Model for the handling short codes and full urls
 type URL struct {
-	Owner     uint      `json:"owner"`
-	ShortCode string    `json:"short_code"`
-	LongURL   string    `json:"long_url"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Owner     uint      `json:"owner" gorm:"primaryKey;not null"`
+	ShortCode string    `json:"short_code" gorm:"not null;unique"`
+	LongURL   string    `json:"long_url" gorm:"not null"`
+	CreatedAt time.Time `json:"created_at" gorm:"not null;default:CURRENT_TIMESTAMP"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"not null;default:0"`
 }
 
 type USER struct {
-	ID        uint   `json:"id"`
-	Name      string `json:"name"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-	CreatedAt string `json:"created_at"`
+	ID        uint   `json:"id" gorm:"primaryKey;autoIncrement;not null"`
+	Name      string `json:"name" gorm:"not null;index"`
+	Email     string `json:"email" gorm:"not null;unique"`
+	Password  string `json:"password" gorm:"not null"`
+	CreatedAt time.Time `json:"created_at" gorm:"not null;default:CURRENT_TIMESTAMP"`
 }

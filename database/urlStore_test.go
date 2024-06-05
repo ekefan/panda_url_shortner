@@ -18,7 +18,7 @@ import (
 
 
 func randomLongURL() string {
-	shortCode, err := util.RandomShortCode()
+	shortCode, err := util.RandomShortCode(5)
 	if err != nil {
 		return ""
 	}
@@ -27,7 +27,7 @@ func randomLongURL() string {
 }
 
 func randomArgs() CreateURLArgs {
-	shortCode, _ := util.RandomShortCode()
+	shortCode, _ := util.RandomShortCode(5)
 	// Error here... this function shoul not return createURLARgs if err shortCode is ""
 	return CreateURLArgs{
 		ShortCode: shortCode,

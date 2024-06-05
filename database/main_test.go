@@ -9,14 +9,14 @@ import (
 	"gorm.io/gorm"
 )
 
-
+var ts Store
 func TestMain(m *testing.M) {
     dbConn, err := gorm.Open(sqlite.Open("./../test.db"), &gorm.Config{})
     if err != nil {
         log.Fatal("Couldn't connect to database: ", err)
     }
 
-    ts := NewStore(dbConn)
+    ts = NewStore(dbConn)
     if err := ts.RunMigrations(dbConn); err != nil {
         log.Fatal("Failed to run migrations: ", err)
     }
