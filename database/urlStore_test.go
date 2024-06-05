@@ -2,18 +2,18 @@ package database
 
 import (
 	"fmt"
-	// "testing"
+	"testing"
+	"time"
 
-	// "github.com/stretchr/testify/require"
 	"github.com/ekefan/panda_url_shortner/util"
+	"github.com/stretchr/testify/require"
 )
-
 
 /*
  ======================   POSSIBLE ERRORS =========================================
 1. Creating new URL row with similar shortcode:UNIQUE constraint failed: urls.
  		short_code is the error when the unique code is broken
-2. 
+2.
 */
 
 
@@ -26,32 +26,34 @@ func randomLongURL() string {
 	return longURL
 }
 
-func randomArgs() CreateURLArgs {
-	shortCode, _ := util.RandomShortCode(5)
-	// Error here... this function shoul not return createURLARgs if err shortCode is ""
-	return CreateURLArgs{
+//New Test Case: Check for when shortCode is an empty string
+func createRandomURL(t *testing.T) (newURL URL){
+	user:= createRandomUser(t)
+	require.NotEmpty(t, user)
+	shortCode, err := util.RandomShortCode(6)
+	require.NoError(t, err)
+	args := CreateURLArgs{
+		Owner: user.ID,
 		ShortCode: shortCode,
 		LongURL: randomLongURL(),
 	}
+	newURL, err = ts.CreateURL(args)
+	require.NoError(t, err)
+	require.NotEmpty(t, newURL)
+	require.Equal(t, newURL.ShortCode, args.ShortCode)
+	require.Equal(t, newURL.LongURL, args.LongURL)
+	require.NotZero(t, newURL.CreatedAt)
+	require.Zero(t, newURL.UpdatedAt)
+	timeStamp := time.Time(time.Date(1, time.January, 1, 0, 0, 0, 0, time.UTC))
+	require.Equal(t, newURL.UpdatedAt, timeStamp)
+	require.NotZero(t, newURL.Owner)
+	require.NotZero(t, newURL.CreatedAt)
+	return
 }
 
-//New Test Case: Check for when shortCode is an empty string
-
-
-// func createRandomURL(t *testing.T, args CreateURLArgs) (newURL URL){
-// 	newURL, err := ts.CreateURL(args)
-// 	require.NoError(t, err)
-// 	require.NotEmpty(t, newURL)
-// 	require.Equal(t, newURL.ShortCode, args.ShortCode)
-// 	require.Equal(t, newURL.LongURL, args.LongURL)
-// 	require.NotZero(t, newURL.Owner)
-// 	require.NotZero(t, newURL.CreatedAt)
-// 	return
-// }
-
-// func TestCreateURL(t *testing.T) {
-// 	createRandomURL(t, randomArgs()) //A case when randomArgs returns "" shortCode
-// }
+func TestCreateURL(t *testing.T) {
+	createRandomURL(t,) //A case when randomArgs returns "" shortCode
+}
 
 // func TestGetURL(t *testing.T) {
 // 	urlRow := createRandomURL(t, randomArgs())

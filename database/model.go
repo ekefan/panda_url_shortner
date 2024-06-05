@@ -11,7 +11,7 @@ type URL struct {
 	ShortCode string    `json:"short_code" gorm:"not null;unique"`
 	LongURL   string    `json:"long_url" gorm:"not null"`
 	CreatedAt time.Time `json:"created_at" gorm:"not null;default:CURRENT_TIMESTAMP"`
-	UpdatedAt time.Time `json:"updated_at" gorm:"not null;default:0"`
+	UpdatedAt time.Time `json:"updated_at" gorm:"not null;default:000-00-00 00:00:00"`
 }
 
 type USER struct {

@@ -18,7 +18,7 @@ CREATE TABLE urls(
     short_code TEXT NOT NULL UNIQUE,
     long_url TEXT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME NOT NULL DEFAULT 0,
+    updated_at DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
     FOREIGN KEY (owner) REFERENCES users(id),
     UNIQUE (owner, short_code),
     UNIQUE (owner, long_url)
