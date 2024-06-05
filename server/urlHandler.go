@@ -36,7 +36,7 @@ func (s *Server) shortenURL(ctx *gin.Context) {
 		return
 	}
 	// generate short code
-	shortCode, err := util.RandomShortCode()
+	shortCode, err := util.RandomShortCode(5)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
