@@ -31,7 +31,7 @@ func (s *Server) shortenURL(ctx *gin.Context) {
 	var req ShortenURLReq
 	//bind request to get LongURL
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		fmt.Println(req)
+		// fmt.Println(req)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
