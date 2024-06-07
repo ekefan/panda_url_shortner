@@ -55,11 +55,11 @@ func (s *Server) shortenURL(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, savedURL.ShortCode) //organise code
 }
 
-
+//GoToURLReq holds the uri value of the short code to redirect to
 type GoToURLReq struct {
 	ShortCode string `uri:"short_code" binding:"required"`
 }
-
+//goToURL redirects to longURL associated with the shortCode from the request
 func (s *Server) goToURL(ctx *gin.Context) {
 	var req GoToURLReq
 	//bind the uri to get the shortCode from the request uri

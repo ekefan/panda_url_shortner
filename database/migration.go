@@ -28,7 +28,7 @@ func (s *Query) RunMigrations(db *gorm.DB) error {
     }
 
     m, err := migrate.NewWithDatabaseInstance(
-        "file://migrations", //for  testing adjust
+        "file://database/migrations", //for  testing adjust
         "sqlite", driver)
     if err != nil {
         return fmt.Errorf("could not create migrate instance: %v", err)
