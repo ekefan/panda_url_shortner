@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -10,15 +9,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ErrorResp custom error response for handler functions to be JSONified by ctx.JSON
-type ErrorResp struct {
-	err string
-}
-
 // errorResponse converts the err to a string message and returns an ErrorResp struct
-func errorResponse(err error) ErrorResp {
-	return ErrorResp{
-		err: err.Error(),
+func errorResponse(err error) gin.H {
+	return gin.H{
+		"error": err.Error(),
 	}
 }
 
@@ -26,6 +20,7 @@ func errorResponse(err error) ErrorResp {
 type ShortenURLReq struct {
 	LongURL string `json:"long_url" binding:"required"`
 }
+
 // shortenURL handler creates a shortened url, returns the short-url in the resp body
 func (s *Server) shortenURL(ctx *gin.Context) {
 	var req ShortenURLReq
@@ -35,31 +30,33 @@ func (s *Server) shortenURL(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
+
 	// generate short code
 	shortCode, err := util.RandomShortCode(5)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
-	} 
+	}
 	//Args for creating a new URL in the database
 	argsToSaveURL := database.CreateURLArgs{
 		ShortCode: shortCode,
-		LongURL: req.LongURL,
+		LongURL:   req.LongURL,
 	}
 	//Handle error properly, the error will not be unique constraint all the time
 	savedURL, err := s.store.CreateURL(argsToSaveURL)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(fmt.Errorf("shortCode already exists: %v", err)))
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 	ctx.JSON(http.StatusOK, savedURL.ShortCode) //organise code
 }
 
-//GoToURLReq holds the uri value of the short code to redirect to
+// GoToURLReq holds the uri value of the short code to redirect to
 type GoToURLReq struct {
 	ShortCode string `uri:"short_code" binding:"required"`
 }
-//goToURL redirects to longURL associated with the shortCode from the request
+
+// goToURL redirects to longURL associated with the shortCode from the request
 func (s *Server) goToURL(ctx *gin.Context) {
 	var req GoToURLReq
 	//bind the uri to get the shortCode from the request uri
@@ -82,3 +79,6 @@ func (s *Server) goToURL(ctx *gin.Context) {
 	}
 	ctx.Redirect(http.StatusMovedPermanently, dbURL.LongURL)
 }
+
+// add authorization for creating a new user or singning in
+// use viper to load environment variables;

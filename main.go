@@ -4,13 +4,13 @@ import (
 	"log"
 
 	"github.com/ekefan/panda_url_shortner/server"
-	"github.com/gin-gonic/gin"
+	// "github.com/gin-gonic/gin"
 	// "time"
 )
 
 // main: the main entry point for the url_shorten server
 func main() {
-	gin.SetMode(gin.ReleaseMode)
+	// gin.SetMode(gin.ReleaseMode)
 	newServer := server.NewServer()
 
 	port := "0.0.0.0:8080" //supposed to be environment variable
