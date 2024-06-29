@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/ekefan/panda_url_shortner/server"
+	"github.com/ekefan/panda_url_shortner/util"
 	// "github.com/gin-gonic/gin"
 	// "time"
 )
@@ -13,9 +14,12 @@ func main() {
 	// gin.SetMode(gin.ReleaseMode)
 	newServer := server.NewServer()
 
-	port := "0.0.0.0:8080" //supposed to be environment variable
+	config, err := util.LoadConfig(".")
+	if err != nil {
+		log.Fatal("could not load environment variable: %v", err)
+	}
 	newServer.SetupRouter()
-	if err := newServer.StartServer(port); err!= nil {
+	if err := newServer.StartServer(config.ServerAddress); err!= nil {
 		log.Fatal("could not start server: %v", err)
 	}
 	/*
