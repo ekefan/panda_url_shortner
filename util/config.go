@@ -6,6 +6,7 @@ import (
 
 type Config struct {
 	ServerAddress string `mapstructure:"SERVER_ADDRESS"`
+	SecretKey string `mapstructure:"SECRET_KEY"`
 }
 func LoadConfig(path string) (config Config, err error){
 	// add path to get the env's if not set
