@@ -55,9 +55,9 @@ func (s *Server) SetupRouter() {
 	newRouter.POST("/user", s.createUser)
 	newRouter.POST("/user/login", s.loginUser)
 
-	// newRouter.Use()
-	newRouter.POST("/new", s.shortenURL)
-	newRouter.GET("/:short_code", s.goToURL)
+	routes := newRouter.Use(jwtAuthHandler(*s.jwtMaker))
+	routes.POST("/new", s.shortenURL)
+	routes.GET("/:short_code", s.goToURL)
 	
 	s.router = newRouter
 }
