@@ -15,8 +15,8 @@ var (
 )
 
 type Payload struct {
-	ID    uuid.UUID        `json:"id"`
-	Owner string           `json:"owner"`
+	ID    uuid.UUID `json:"id"`
+	Owner string    `json:"owner"`
 	Iat   time.Time `json:"iat"`
 	Exp   time.Time `json:"exp"`
 }
@@ -44,8 +44,9 @@ func NewPayload(owner string, duration time.Duration) (*Payload, error) {
 	return payload, nil
 }
 
-
 // code below is not used in the applcation
+// it is a necessary implementation for jwt.Claims interface
+// used to create jwt tokens
 func (p *Payload) GetExpirationTime() (*jwt.NumericDate, error) {
 
 	panic("not implemented")
@@ -63,5 +64,5 @@ func (p *Payload) GetSubject() (string, error) {
 	panic("not implemented")
 }
 func (p *Payload) GetAudience() (jwt.ClaimStrings, error) {
-	panic ("not implemented")
+	panic("not implemented")
 }

@@ -32,7 +32,7 @@ func (s *Server) createUser(ctx *gin.Context) {
 		return
 	}
 	resp := struct {
-		Name  string `json: "name"`
+		Name  string `json:"name"`
 		Email string `json:"email"`
 	}{
 		Name:  newUser.Name,
