@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/ekefan/panda_url_shortner/authorize"
 	"github.com/ekefan/panda_url_shortner/database"
 	"github.com/ekefan/panda_url_shortner/util"
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,7 @@ type Server struct {
 	store database.Store
 	router *gin.Engine
 	config util.Config
+	jwtMaker *authorize.JwtMaker
 }
 
 func NewServer(config util.Config) *Server{
@@ -27,9 +29,14 @@ func NewServer(config util.Config) *Server{
 	if err != nil {
 		log.Fatal(err)
 	}
+	makeJwt, err := authorize.NewJwtToken(config.TokenSymmetricKey)
+	if err != nil {
+		log.Fatal("can not create tokens: ", err)
+	}
 	return &Server{
 		store: s,
 		config: config,
+		jwtMaker: makeJwt,
 	}
 }
 
