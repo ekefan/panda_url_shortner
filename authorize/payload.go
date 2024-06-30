@@ -17,12 +17,12 @@ var (
 type Payload struct {
 	ID    uuid.UUID        `json:"id"`
 	Owner string           `json:"owner"`
-	Iat   *jwt.NumericDate `json:"iat"`
-	Exp   *jwt.NumericDate `json:"exp"`
+	Iat   time.Time `json:"iat"`
+	Exp   time.Time `json:"exp"`
 }
 
 func (payload *Payload) Valid() error {
-	if time.Now().After(payload.Exp.Time) {
+	if time.Now().After(payload.Exp) {
 		return ErrExpiredToken
 	}
 	return nil
@@ -33,8 +33,8 @@ func NewPayload(owner string, duration time.Duration) (*Payload, error) {
 	if err != nil {
 		return nil, err
 	}
-	iat := jwt.NewNumericDate(time.Now())
-	exp := jwt.NewNumericDate(time.Now().Add(duration))
+	iat := time.Now()
+	exp := time.Now().Add(duration)
 	payload := &Payload{
 		ID:    tokenID,
 		Owner: owner,
@@ -48,13 +48,13 @@ func NewPayload(owner string, duration time.Duration) (*Payload, error) {
 // code below is not used in the applcation
 func (p *Payload) GetExpirationTime() (*jwt.NumericDate, error) {
 
-	return p.Exp, nil
+	panic("not implemented")
 }
 func (p *Payload) GetIssuedAt() (*jwt.NumericDate, error) {
-	return p.Iat, nil
+	panic("not implemented")
 }
 func (p *Payload) GetNotBefore() (*jwt.NumericDate, error) {
-	return p.Iat, nil
+	panic("not implemented")
 }
 func (p *Payload) GetIssuer() (string, error) {
 	return p.Owner, nil
