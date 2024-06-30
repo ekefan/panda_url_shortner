@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/ekefan/panda_url_shortner/database"
+	"github.com/ekefan/panda_url_shortner/util"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -13,9 +14,10 @@ import (
 type Server struct {
 	store database.Store
 	router *gin.Engine
+	config util.Config
 }
 
-func NewServer() *Server{
+func NewServer(config util.Config) *Server{
 	dbConn, err := gorm.Open(sqlite.Open("app.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatal("error connecting with database", err)
@@ -27,11 +29,12 @@ func NewServer() *Server{
 	}
 	return &Server{
 		store: s,
+		config: config,
 	}
 }
 
 
-func (s *Server) StartServer(port string) error {
+func (s *Server) StartServer() error {
 	if err := s.router.Run(); err != nil {
 		return fmt.Errorf("error starting server: %s", err)
 	}
@@ -49,7 +52,6 @@ func (s *Server) SetupRouter() {
 	newRouter.GET("/:short_code", s.goToURL)
 	
 	s.router = newRouter
-
 }
 
 

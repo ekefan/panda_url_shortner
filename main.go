@@ -12,15 +12,16 @@ import (
 // main: the main entry point for the url_shorten server
 func main() {
 	// gin.SetMode(gin.ReleaseMode)
-	newServer := server.NewServer()
+	
 
 	config, err := util.LoadConfig(".")
 	if err != nil {
-		log.Fatal("could not load environment variable: %v", err)
+		log.Fatal("could not load environment variable ", err)
 	}
+	newServer := server.NewServer(config)
 	newServer.SetupRouter()
-	if err := newServer.StartServer(config.ServerAddress); err!= nil {
-		log.Fatal("could not start server: %v", err)
+	if err := newServer.StartServer(); err!= nil {
+		log.Fatal("could not start server ", err)
 	}
 	/*
 		Couldn't separated migration process from the main code using gorm
