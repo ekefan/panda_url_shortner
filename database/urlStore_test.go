@@ -52,7 +52,7 @@ func createRandomURL(t *testing.T) (newURL URL){
 }
 
 func TestCreateURL(t *testing.T) {
-	createRandomURL(t,) //A case when randomArgs returns "" shortCode
+	createRandomURL(t) //A case when randomArgs returns "" shortCode
 }
 
 // func TestGetURL(t *testing.T) {
