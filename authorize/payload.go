@@ -48,21 +48,20 @@ func NewPayload(owner string, duration time.Duration) (*Payload, error) {
 // it is a necessary implementation for jwt.Claims interface
 // used to create jwt tokens
 func (p *Payload) GetExpirationTime() (*jwt.NumericDate, error) {
-
-	panic("not implemented")
+	return jwt.NewNumericDate(p.Exp), nil
 }
 func (p *Payload) GetIssuedAt() (*jwt.NumericDate, error) {
-	panic("not implemented")
+	return jwt.NewNumericDate(p.Iat), nil
 }
 func (p *Payload) GetNotBefore() (*jwt.NumericDate, error) {
-	panic("not implemented")
+	return jwt.NewNumericDate(p.Iat), nil
 }
 func (p *Payload) GetIssuer() (string, error) {
 	return p.Owner, nil
 }
 func (p *Payload) GetSubject() (string, error) {
-	panic("not implemented")
+	return "local", nil
 }
 func (p *Payload) GetAudience() (jwt.ClaimStrings, error) {
-	panic("not implemented")
+	return []string{}, nil
 }
