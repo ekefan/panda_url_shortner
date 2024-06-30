@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateToken(t *testing.T) {
+func TestToken(t *testing.T) {
 	key := "12345678901234567890123456789012"
 	randomUser, err := util.RandomShortCode(4)
 	require.NoError(t, err)
