@@ -45,14 +45,14 @@ func (t *JwtMaker) VerifyToken(token string) (*Payload, error) {
 		if !ok {
 			return nil, ErrInvalidToken
 		}
-		return t.key, nil
+		return []byte(t.key), nil
 	}
 	jwtToken, err := jwt.ParseWithClaims(token, &Payload{}, keyfunc)
 	if err != nil {
 		// golang's implementation of jwt returns ErrInvalidClaims error on error
 		return nil, err
 	}
-
+	// fmt.Println("got here")  test printing
 	//get claims and return it
 	payload, ok := jwtToken.Claims.(*Payload)
 	if !ok {
