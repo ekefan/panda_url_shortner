@@ -38,8 +38,9 @@ func (s *Server) createUser(ctx *gin.Context) {
 		Name:  newUser.Name,
 		Email: newUser.Email,
 	}
+	ctx.Redirect(http.StatusFound, "/user/login")
 	ctx.JSON(http.StatusOK, resp)
 }
-func (s *Server) loginUser(ctx *gin.Context) {}
+//after creating user redirect to login user
 
-///after creating user redirect to login user
+func (s *Server) loginUser(ctx *gin.Context) {}
