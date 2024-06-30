@@ -42,7 +42,7 @@ func NewServer(config util.Config) *Server{
 
 
 func (s *Server) StartServer() error {
-	if err := s.router.Run(); err != nil {
+	if err := s.router.Run(s.config.ServerAddress); err != nil {
 		return fmt.Errorf("error starting server: %s", err)
 	}
 	return nil
@@ -55,6 +55,7 @@ func (s *Server) SetupRouter() {
 	newRouter.POST("/user", s.createUser)
 	newRouter.POST("/user/login", s.loginUser)
 
+	// newRouter.Use()
 	newRouter.POST("/new", s.shortenURL)
 	newRouter.GET("/:short_code", s.goToURL)
 	
