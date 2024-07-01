@@ -14,7 +14,7 @@ CREATE INDEX idx_user_name ON users(name);
 -- Create the urls table
 CREATE TABLE urls(
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    owner INTEGER NOT NULL,
+    owner TEXT NOT NULL,
     short_code TEXT NOT NULL UNIQUE,
     long_url TEXT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
