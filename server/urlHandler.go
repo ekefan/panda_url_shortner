@@ -4,6 +4,9 @@ import (
 	"net/http"
 	"strings"
 
+	"errors"
+
+	"github.com/ekefan/panda_url_shortner/authorize"
 	"github.com/ekefan/panda_url_shortner/database"
 	"github.com/ekefan/panda_url_shortner/util"
 	"github.com/gin-gonic/gin"
@@ -30,6 +33,13 @@ func (s *Server) shortenURL(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
+	payload := ctx.MustGet(authPayloadKey)
+	authPayload, ok := payload.(*authorize.Payload)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, 
+			errorResponse(errors.New("not authorized")))
+		return 
+	}
 
 	// generate short code
 	shortCode, err := util.RandomShortCode(5)
@@ -39,6 +49,7 @@ func (s *Server) shortenURL(ctx *gin.Context) {
 	}
 	//Args for creating a new URL in the database
 	argsToSaveURL := database.CreateURLArgs{
+		Owner: authPayload.Owner,
 		ShortCode: shortCode,
 		LongURL:   req.LongURL,
 	}
