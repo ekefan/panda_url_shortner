@@ -5,6 +5,7 @@ import (
 
 	// "github.com/ekefan/panda_url_shortner/authorize"
 	"github.com/ekefan/panda_url_shortner/database"
+	"github.com/ekefan/panda_url_shortner/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,10 +29,15 @@ func (s *Server) createUser(ctx *gin.Context) {
 		return
 	}
 	//implement password hash and verifier
+	hash, err := util.HashPassword(req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
 	args := database.CreateUserArgs{
 		Name:           req.Name,
 		Email:          req.Email,
-		HashedPassword: req.Password,
+		HashedPassword: hash,
 	}
 	newUser, err := s.store.CreateUser(args)
 	if err != nil {
@@ -65,6 +71,12 @@ func (s *Server) loginUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
+	err = util.VerifyPassword(user.Password, req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, errorResponse(err))
+		return
+	}
+
 	token, err := s.jwtMaker.CreateToken(req.Name, s.config.AccessTokenDuration)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
