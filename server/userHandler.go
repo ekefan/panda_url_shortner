@@ -15,10 +15,11 @@ type CreateUserReq struct {
 	Password string `json:"password" binding:"required,min=6"`
 }
 
-type UserResp struct{
-		Name  string `json:"name"`
-		Email string `json:"email"`
+type UserResp struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
+
 // createUser creates a new USER in database based on CreateUserReq fields
 func (s *Server) createUser(ctx *gin.Context) {
 	var req CreateUserReq
@@ -44,20 +45,22 @@ func (s *Server) createUser(ctx *gin.Context) {
 	ctx.Redirect(http.StatusFound, "/user/login")
 	ctx.JSON(http.StatusOK, resp)
 }
+
 //after creating user redirect to login user
 
 type LoginRequest struct {
-	Name string `json:"name" binding:"required"`
+	Name     string `json:"name" binding:"required"`
 	Password string `json:"password" binding:"required,min=6"`
 }
+
 func (s *Server) loginUser(ctx *gin.Context) {
-	var req LoginRequest 
+	var req LoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 	//implement password hash and verifier
-	user, err := s.store.GetUser(database.GetUserArgs{Name:req.Name})
+	user, err := s.store.GetUser(database.GetUserArgs{Name: req.Name})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -69,13 +72,15 @@ func (s *Server) loginUser(ctx *gin.Context) {
 	}
 	resp := struct {
 		Token string `json:"access_token"`
-		Name string `json:"name"`
+		Name  string `json:"name"`
 		Email string `json:"email"`
-
 	}{
-		Token : token,
-		Name: user.Name,
+		Token: token,
+		Name:  user.Name,
 		Email: user.Email,
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
+
+// Ensure login works
+// Connect middleware to create url and get url to implement them
