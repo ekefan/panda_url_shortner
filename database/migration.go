@@ -10,7 +10,7 @@ import (
 )
 
 /// When creating the first github actions set Run Migrations to take path to file from env
-func (s *Query) RunMigrations(db *gorm.DB) error {
+func (s *Query) RunMigrations(db *gorm.DB, flag int) error {
 	hasUser := s.db.Migrator().HasTable(&URL{})
 	hasURL := s.db.Migrator().HasTable(&USER{})
 	if hasUser && hasURL {
@@ -26,9 +26,12 @@ func (s *Query) RunMigrations(db *gorm.DB) error {
     if err != nil {
      return fmt.Errorf("could not create migration driver: %v", err)
     }
-
+    var migrationFile string
+    if flag == 1 { migrationFile = "file://./../../database/migrations/"} else {
+        migrationFile = "file://database/migrations/"
+    }
     m, err := migrate.NewWithDatabaseInstance(
-        "file://database/migrations", //for  testing adjust
+        migrationFile, //for  testing adjust
         "sqlite", driver)
     if err != nil {
         return fmt.Errorf("could not create migrate instance: %v", err)

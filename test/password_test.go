@@ -8,6 +8,7 @@ import (
 )
 
 
+// TestGenerateHash: Happy case for when randomcode is short
 func TestGenerateHash(t *testing.T){
 	password, err := util.RandomShortCode(8)
 	require.NoError(t, err)

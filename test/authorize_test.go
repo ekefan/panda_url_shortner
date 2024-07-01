@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// TestTokne, happy case for when every token parameter is kept well
 func TestToken(t *testing.T) {
 	key := "12345678901234567890123456789012"
 	randomUser, err := util.RandomShortCode(4)
@@ -31,5 +32,9 @@ func TestToken(t *testing.T) {
 	require.NotEmpty(t, payload.ID)
 	require.Equal(t, payload.Owner, randomUser)
 	require.WithinDuration(t, payload.Iat, time.Now(), time.Second)
-
 }
+
+// right key, right duration, 
+// duration passed
+// shortkey
+// wrong token string
