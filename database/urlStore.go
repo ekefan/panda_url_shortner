@@ -2,7 +2,7 @@ package database
 
 // createURLArgs: struct for holding args for creating a new URL-row
 type CreateURLArgs struct {
-	Owner     uint `json:"owner"`
+	Owner     string `json:"owner"`
 	ShortCode string `json:"short_code"`
 	LongURL   string `json:"long_url"`
 }

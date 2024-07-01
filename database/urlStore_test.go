@@ -33,7 +33,7 @@ func createRandomURL(t *testing.T) (newURL URL){
 	shortCode, err := util.RandomShortCode(6)
 	require.NoError(t, err)
 	args := CreateURLArgs{
-		Owner: user.ID,
+		Owner: user.Name,
 		ShortCode: shortCode,
 		LongURL: randomLongURL(),
 	}

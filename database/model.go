@@ -7,7 +7,7 @@ import (
 
 // URL: Model for the handling short codes and full urls
 type URL struct {
-	Owner     uint      `json:"owner" gorm:"primaryKey;not null"`
+	Owner     string      `json:"owner" gorm:"primaryKey;not null"`
 	ShortCode string    `json:"short_code" gorm:"not null;unique"`
 	LongURL   string    `json:"long_url" gorm:"not null"`
 	CreatedAt time.Time `json:"created_at" gorm:"not null;default:CURRENT_TIMESTAMP"`
