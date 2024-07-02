@@ -2,7 +2,6 @@ package database
 
 import (
 	// "errors"
-
 	"fmt"
 	"time"
 
@@ -46,13 +45,13 @@ func (s *Query) getUrlForUpdate(shortCode string) (URL, error) {
 
 }
 
-type UpdateShortCodeArgs struct {
+type TxUrlArgs struct {
 	Owner     string `json:"owner"`
 	ShortCode string `json:"short_code"`
 }
 
-// UpdateShortCode a transaction to update the short code off the url
-func (s *Query) UpdateShortCode(args UpdateShortCodeArgs) (URL, error) {
+// TxUpdateShortCode a transaction to update the short code off the url
+func (s *Query) TxUpdateShortCode(args TxUrlArgs) (URL, error) {
 	urlRow := URL{}
 	txErr := s.db.Transaction(func(tx *gorm.DB) error {
 		result := tx.Model(&urlRow).Where("owner = ?", args.Owner).
@@ -84,6 +83,33 @@ func (s *Query) UpdateShortCode(args UpdateShortCodeArgs) (URL, error) {
 	return urlRow, nil
 }
 
-// func (s *Store) DeleteURl() \begin, get the user delete the url based on the url id{}
+// TxDeleteUrl a transaction to update the database removing a url row
+func(s *Query) TxDeleteUrl(args TxUrlArgs)(error){
+	urlRow := URL{}
+	txErr := s.db.Transaction(func(tx *gorm.DB) error {
+		// Find the url row based on the owner
+		result := tx.First(&urlRow, "owner = ?", args.Owner)
+		if result.Error != nil {
+			return fmt.Errorf("user can't delete url: %v", result.Error)
+		}
+
+		// Delete the url row based on the shortcode, owner and shortcodes are unique
+		result = tx.Where("short_code = ?", args.ShortCode).Delete(&urlRow)
+		if result.Error != nil {
+			return result.Error
+		}
+
+		// Check if any rows were affected
+		if result.RowsAffected == 0 {
+			return fmt.Errorf("no rows affected")
+		}
+		return nil
+	})
+
+	if txErr != nil {
+		return txErr
+	}
+	return nil
+}
 //=====edit URL model to contain title and user generated shortcode
 //UPDATEURL should edit the title of the url, and the shortcode.
