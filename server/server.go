@@ -59,7 +59,7 @@ func (s *Server) SetupRouter() {
 
 	// ================= URLS ================
 	// 			getUrls --- query..with page size and offset
-	// 			deleteUrl -- delete from url where id = url = ID
+	// 			deleteUrl --- delete from url where id = url = ID
 	// 			editshortcode -- transaction, begin,  udpate url. commit ///working on it // done
 
 	// ================= USERs ===============

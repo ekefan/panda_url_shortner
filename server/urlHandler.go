@@ -59,7 +59,14 @@ func (s *Server) shortenURL(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, savedURL.ShortCode) //organise code
+	resp := struct{
+		Owner string `json:"owner"`
+		ShortCode string `json:"short_code"`
+	}{
+		Owner: savedURL.Owner,
+		ShortCode: savedURL.ShortCode,
+	}
+	ctx.JSON(http.StatusOK, resp) //organise code
 }
 
 // GoToURLReq holds the uri value of the short code to redirect to
