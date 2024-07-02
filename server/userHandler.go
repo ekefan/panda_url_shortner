@@ -96,3 +96,8 @@ func (s *Server) loginUser(ctx *gin.Context) {
 
 // Ensure login works
 // Connect middleware to create url and get url to implement them
+
+
+// for updating the username....
+// making calls to the database check for error msg; Error: stepping, database is locked (5)
+// if error is received make another call
