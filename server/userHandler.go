@@ -84,9 +84,11 @@ func (s *Server) loginUser(ctx *gin.Context) {
 	}
 	resp := struct {
 		Token string `json:"access_token"`
+		ID    uint   `json:"user_id"`
 		Name  string `json:"name"`
 		Email string `json:"email"`
 	}{
+		ID:    user.ID,
 		Token: token,
 		Name:  user.Name,
 		Email: user.Email,
@@ -96,7 +98,6 @@ func (s *Server) loginUser(ctx *gin.Context) {
 
 // Ensure login works
 // Connect middleware to create url and get url to implement them
-
 
 // for updating the username....
 // making calls to the database check for error msg; Error: stepping, database is locked (5)
