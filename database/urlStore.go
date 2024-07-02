@@ -35,16 +35,26 @@ func (s *Query) GetURL(args GetURLArgs) (URL, error) {
 	return urlRow, result.Error
 }
 
-// Code from yesterday
+//GetURLsArg hold fields for getting a list of urls from the database
+type GetURLsArg struct {
+	Owner string `json:"owner"`
+	Limit int `json:"limit"`
+	Offset int `json:"offset"`
+}
+// GetURLs make a query to database and returns urls from the offset to the limit.
+func (s *Query) GetURLs(args GetURLsArg) ([]URL, error){
+	urls := []URL{}
+	result := s.db.Limit(args.Limit).Offset(args.Offset).Where("owner = ?", args.Owner).Find(&urls)
 
-// GetURL
-func (s *Query) getUrlForUpdate(shortCode string) (URL, error) {
-	urlRow := URL{}
-	result := s.db.Where("owner = ?", shortCode).First(&urlRow)
-	return urlRow, result.Error
+	if result.Error != nil {
+		return nil, result.Error
+	}
 
+	return urls, nil
 }
 
+
+// TxUrlArgs hold fields needed to make an update and delete tx for a url row
 type TxUrlArgs struct {
 	Owner     string `json:"owner"`
 	ShortCode string `json:"short_code"`
@@ -75,7 +85,8 @@ func (s *Query) TxUpdateShortCode(args TxUrlArgs) (URL, error) {
 	}
 
 	//get the newly update url row by the newShort code
-	urlRow, err := s.getUrlForUpdate(args.ShortCode)
+	arg := GetURLArgs{args.ShortCode}
+	urlRow, err := s.GetURL(arg)
 	if err != nil {
 		return urlRow, err
 	}

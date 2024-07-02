@@ -58,8 +58,8 @@ func (s *Server) SetupRouter() {
 	routes.GET("/:short_code", s.goToURL)
 
 	// ================= URLS ================
-	// 			getUrls --- query..with page size and offset
-	// 			deleteUrl --- delete from url where id = url = ID
+	// 			getUrls --- query..with page size and offset //working on it // done
+	// 			deleteUrl --- delete from url where id = url = ID //working on it // done
 	// 			editshortcode -- transaction, begin,  udpate url. commit ///working on it // done
 
 	// ================= USERs ===============
