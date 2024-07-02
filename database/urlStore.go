@@ -61,6 +61,7 @@ type TxUrlArgs struct {
 }
 
 // TxUpdateShortCode a transaction to update the short code off the url
+// a possible error is shortcode constraint
 func (s *Query) TxUpdateShortCode(args TxUrlArgs) (URL, error) {
 	urlRow := URL{}
 	txErr := s.db.Transaction(func(tx *gorm.DB) error {
