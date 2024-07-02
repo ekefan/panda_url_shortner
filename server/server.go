@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"log"
 
+	"time"
 	"github.com/ekefan/panda_url_shortner/authorize"
 	"github.com/ekefan/panda_url_shortner/database"
 	"github.com/ekefan/panda_url_shortner/util"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -50,6 +52,16 @@ func (s *Server) StartServer() error {
 func (s *Server) SetupRouter() {
 	newRouter := gin.Default()
 
+	corsConfig := cors.Config{
+		AllowOrigins:     []string{"http://localhost:5500"}, // Change to your frontend's origin
+		AllowMethods:     []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}
+
+	newRouter.Use(cors.New(corsConfig))
 	newRouter.POST("/user", s.createUser)
 	newRouter.POST("/user/login", s.loginUser)
 
@@ -63,6 +75,8 @@ func (s *Server) SetupRouter() {
 	// 			editshortcode -- transaction, begin,  udpate url. commit ///working on it // done
 
 	// ================= USERs ===============
+
+	///Working on these now.......
 	//			updateUser ---transaction // begin update url.owner update user.name commit if any error rollback
 	//			deleteUser --- transaction // begin delete urls where owner = username, delete users where name = username if any error rollback
 
