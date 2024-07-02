@@ -1,14 +1,14 @@
 package dbtest
 
 import (
-	db "github.com/ekefan/panda_url_shortner/database"
 	"fmt"
 	"testing"
 	"time"
 
+	db "github.com/ekefan/panda_url_shortner/database"
+
 	"github.com/ekefan/panda_url_shortner/util"
 	"github.com/stretchr/testify/require"
-
 )
 
 func randomLongURL() string {
@@ -20,16 +20,15 @@ func randomLongURL() string {
 	return longURL
 }
 
-//New Test Case: Check for when shortCode is an empty string
-func createRandomURL(t *testing.T) (newURL db.URL){
-	user:= createRandomUser(t)
+// New Test Case: Check for when shortCode is an empty string
+func createRandomURL(t *testing.T, user db.USER) (newURL db.URL) {
 	require.NotEmpty(t, user)
 	shortCode, err := util.RandomShortCode(6)
 	require.NoError(t, err)
 	args := db.CreateURLArgs{
-		Owner: user.Name,
+		Owner:     user.Name,
 		ShortCode: shortCode,
-		LongURL: randomLongURL(),
+		LongURL:   randomLongURL(),
 	}
 	newURL, err = ts.CreateURL(args)
 	require.NoError(t, err)
@@ -46,6 +45,47 @@ func createRandomURL(t *testing.T) (newURL db.URL){
 }
 
 func TestCreateURL(t *testing.T) {
-	createRandomURL(t) //A case when randomArgs returns "" shortCo
-	// fmt.Println("nw")
+	user := createRandomUser(t)
+	createRandomURL(t, user) //A case when randomArgs returns "" shortCo
+
 }
+
+func TestGetUrls(t *testing.T) {
+	// fmt.Println("nw")
+	urls := []db.URL{}
+	user := createRandomUser(t)
+	for i := 0; i < 10; i++ {
+		urls = append(urls, createRandomURL(t, user))
+	}
+	args := db.GetURLsArg{
+		Owner:  user.Name,
+		Limit:  10,
+		Offset: 5,
+	}
+	dbUrls, err := ts.GetURLs(args)
+	require.NoError(t, err)
+	require.NotEmpty(t, dbUrls)
+	require.Equal(t, len(dbUrls), 5)
+	for i, url := range urls{
+		require.Equal(t, url.Owner, urls[i].Owner)
+	}
+}
+
+func TestTxUpdateShortCode(t *testing.T) {
+	user := createRandomUser(t)
+	url := createRandomURL(t, user)
+
+	require.Equal(t, user.Name, url.Owner)
+	args := db.TxUrlArgs{
+		Owner: url.Owner,
+		ShortCode: "nbsdfil",
+	}
+	updatedUrl, err := ts.TxUpdateShortCode(args)
+	require.NoError(t, err)
+	require.NotEmpty(t, updatedUrl)
+	require.Equal(t, args.ShortCode, updatedUrl.ShortCode)
+	require.NotEqual(t, updatedUrl.ShortCode, url.ShortCode)
+	require.Equal(t, url.Owner, updatedUrl.Owner)
+}
+
+//case for already existing shortcode in the database
