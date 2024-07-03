@@ -46,8 +46,7 @@ func (s *Query) TxUpdateUser(args TxUserArgs) (USER, error) {
 	userRow := USER{}
 	txErr := s.db.Transaction(func(tx *gorm.DB) error {
 		//make query to update user.name in the database
-		
-		result := tx.Model(&userRow).Where("id = ?", args.UserID).Update("name", args.UserName)
+		result := tx.Model(&userRow).Where("id = ?", args.UserID).Update("name", args.NameUpdate)
 
 		// handle error if any.
 		if result.Error != nil {
@@ -60,7 +59,7 @@ func (s *Query) TxUpdateUser(args TxUserArgs) (USER, error) {
 		}
 
 		// update the url name from the url table
-		result = tx.Model(&URL{}).Where("owner = ?", args.UserName).Update("owner", userRow.Name)
+		result = tx.Model(&URL{}).Where("owner = ?", args.UserName).Update("owner", args.NameUpdate)
 		if result.Error != nil {
 			return result.Error
 		}
@@ -92,7 +91,7 @@ func (s *Query)TxDeleteUser(args TxUserArgs) error {
 			if result.Error != nil {
 				return result.Error
 			}
-			result = tx.First(&urlRow, "onwer = ?", args.UserName)
+			result = tx.First(&urlRow, "owner = ?", args.UserName)
 			if result.Error != nil {
 				return result.Error
 			}
@@ -104,7 +103,7 @@ func (s *Query)TxDeleteUser(args TxUserArgs) error {
 			if result.RowsAffected == 0 {
 				return fmt.Errorf("no rows affectd for all urs")
 			}
-	
+
 			//delete the user
 			result = tx.Where("id = ?", userRow.ID).Delete(userRow)
 			if result.Error != nil {
