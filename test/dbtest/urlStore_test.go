@@ -80,6 +80,7 @@ func TestTxUpdateShortCode(t *testing.T) {
 	require.NoError(t, err)
 	args := db.TxUrlArgs{
 		Owner: url.Owner,
+		// CurrentShortCode: url.ShortCode,
 		ShortCode: shortCode,
 	}
 	updatedUrl, err := ts.TxUpdateShortCode(args)
@@ -87,6 +88,7 @@ func TestTxUpdateShortCode(t *testing.T) {
 	require.NotEmpty(t, updatedUrl)
 	require.Equal(t, args.ShortCode, updatedUrl.ShortCode)
 	require.NotEqual(t, updatedUrl.ShortCode, url.ShortCode)
+	require.Equal(t, args.ShortCode, updatedUrl.ShortCode)
 	require.Equal(t, url.Owner, updatedUrl.Owner)
 	
 }
