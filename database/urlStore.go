@@ -57,7 +57,7 @@ func (s *Query) GetURLs(args GetURLsArg) ([]URL, error) {
 // TxUrlArgs hold fields needed to make an update and delete tx for a url row
 type TxUrlArgs struct {
 	Owner     string `json:"owner"`
-	ShortCode string `json:"short_code"`
+	ShortCode string `json:"shortcode_update"`
 }
 
 // TxUpdateShortCode a transaction to update the short code off the url

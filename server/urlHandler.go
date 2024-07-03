@@ -98,5 +98,43 @@ func (s *Server) goToURL(ctx *gin.Context) {
 	ctx.Redirect(http.StatusMovedPermanently, dbURL.LongURL)
 }
 
-// add authorization for creating a new user or singning in
-// use viper to load environment variables;
+
+type UpdateShortCodeReq struct{
+	ShortCode string `json:"shortcode_update"`
+}
+
+type UrlResp struct {
+	ShortCode string `json:"shortcode"`
+	LongUrl string `json:"long_url"`
+}
+
+// updateShortCode updates the shortcode of the users url
+func (s *Server) updateShortCode(ctx *gin.Context) {
+	var req UpdateShortCodeReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	payload := ctx.MustGet(authPayloadKey)
+	authPayload, ok := payload.(*authorize.Payload)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, 
+			errorResponse(errors.New("not authorized")))
+		return 
+	}
+	arg := database.TxUrlArgs{
+		Owner: authPayload.Owner,
+		ShortCode: req.ShortCode,
+	}
+	updatedUrl, err := s.store.TxUpdateShortCode(arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	resp := UrlResp{
+		ShortCode: updatedUrl.ShortCode,
+		LongUrl: updatedUrl.LongURL,
+	}
+	ctx.JSON(http.StatusOK, resp)
+}
