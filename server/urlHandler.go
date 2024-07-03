@@ -179,3 +179,31 @@ func (s *Server) getUserUrls(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, urlResps)
 }
+
+
+func (s *Server) deleteUrl(ctx *gin.Context){
+	var req UpdateShortCodeReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	payload := ctx.MustGet(authPayloadKey)
+	authPayload, ok := payload.(*authorize.Payload)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, 
+			errorResponse(errors.New("not authorized")))
+		return 
+	}
+	arg := database.TxUrlArgs{
+		Owner: authPayload.Owner,
+		ShortCode: req.ShortCode,
+	}
+	err := s.store.TxDeleteUrl(arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	resp := struct{ msg string `json:"msg"`}{msg: "successful"}
+	ctx.JSON(http.StatusOK, resp)
+}
