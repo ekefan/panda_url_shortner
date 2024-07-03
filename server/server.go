@@ -68,6 +68,9 @@ func (s *Server) SetupRouter() {
 	routes := newRouter.Use(jwtAuthHandler(*s.jwtMaker))
 	routes.POST("/new", s.shortenURL)
 	routes.GET("/:short_code", s.goToURL)
+	routes.GET("/user/login", s.getUserUrls)
+	routes.PUT("/user/url/:short_code", s.updateShortCode)
+	routes.DELETE("/user/url/:short_code", s.deleteUrl)
 
 	// ================= URLS ================
 	// 			getUrls --- query..with page size and offset //working on it // done
