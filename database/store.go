@@ -10,6 +10,9 @@ type Store interface {
 	GetUser(args GetUserArgs) (USER, error)
 	GetURLs(args GetURLsArg) ([]URL, error)
 	TxUpdateShortCode(args TxUrlArgs) (URL, error)
+	TxUpdateUser(args TxUserArgs) (USER, error)
+	TxDeleteUser(args TxUserArgs) error
+	TxDeleteUrl(args TxUrlArgs) error 
 }
 
 type Query struct {
