@@ -76,9 +76,11 @@ func TestTxUpdateShortCode(t *testing.T) {
 	url := createRandomURL(t, user)
 
 	require.Equal(t, user.Name, url.Owner)
+	shortCode, err := util.RandomShortCode(5)
+	require.NoError(t, err)
 	args := db.TxUrlArgs{
 		Owner: url.Owner,
-		ShortCode: "nbsdfil",
+		ShortCode: shortCode,
 	}
 	updatedUrl, err := ts.TxUpdateShortCode(args)
 	require.NoError(t, err)
@@ -86,6 +88,35 @@ func TestTxUpdateShortCode(t *testing.T) {
 	require.Equal(t, args.ShortCode, updatedUrl.ShortCode)
 	require.NotEqual(t, updatedUrl.ShortCode, url.ShortCode)
 	require.Equal(t, url.Owner, updatedUrl.Owner)
+	
 }
 
 //case for already existing shortcode in the database
+
+
+func  TestTxDeleteUrl(t *testing.T) {
+	usr := createRandomUser(t)
+
+	usersUrls := []db.URL{}
+	for i := 0; i < 5; i++ {
+		usersUrls = append(usersUrls, createRandomURL(t, usr))
+	}
+
+	for i := 0; i < 5; i++ {
+		arg := db.TxUrlArgs{
+			Owner: usr.Name,
+			ShortCode: usersUrls[i].ShortCode,
+		}
+		err := ts.TxDeleteUrl(arg)
+		require.NoError(t, err)
+
+		// check that the urls don't exist in the database anymore
+		_, err = ts.GetURL(db.GetURLArgs{
+			ShortCode: usersUrls[i].ShortCode,
+		})
+		require.Error(t, err)
+	}
+	
+
+
+}
