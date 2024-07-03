@@ -98,21 +98,32 @@ func (s *Server) goToURL(ctx *gin.Context) {
 	ctx.Redirect(http.StatusMovedPermanently, dbURL.LongURL)
 }
 
-// UpdateShortCodeReq holds field required for shortcode update
-type UpdateShortCodeReq struct{
-	ShortCode string `json:"shortcode_update"`
+/// UpdateShortCodeReq holds field required for shortcode update
+type UpdateShortCodeReq struct {
+	ShortCode string `uri:"short_code" binding:"required"`
 }
 
-//UrlResp: holds fields required for update response
+// UpdateUrlRequest holds the new short code to update
+type UpdateUrlRequest struct {
+	NewShortCode string `json:"new_short_code" binding:"required"`
+}
+
+// UrlResp holds fields required for the update response
 type UrlResp struct {
 	ShortCode string `json:"shortcode"`
-	LongUrl string `json:"long_url"`
+	LongUrl   string `json:"long_url"`
 }
 
-// updateShortCode updates the shortcode of the users url
+// updateShortCode updates the short code of the user's URL
 func (s *Server) updateShortCode(ctx *gin.Context) {
-	var req UpdateShortCodeReq
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	var uriReq UpdateShortCodeReq
+	if err := ctx.ShouldBindUri(&uriReq); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var jsonReq UpdateUrlRequest
+	if err := ctx.ShouldBindJSON(&jsonReq); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -120,14 +131,23 @@ func (s *Server) updateShortCode(ctx *gin.Context) {
 	payload := ctx.MustGet(authPayloadKey)
 	authPayload, ok := payload.(*authorize.Payload)
 	if !ok {
-		ctx.AbortWithStatusJSON(http.StatusUnauthorized, 
-			errorResponse(errors.New("not authorized")))
-		return 
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(errors.New("not authorized")))
+		return
 	}
+
 	arg := database.TxUrlArgs{
-		Owner: authPayload.Owner,
-		ShortCode: req.ShortCode,
+		Owner:     authPayload.Owner,
+		CurrentShortCode: uriReq.ShortCode,
+		ShortCode: jsonReq.NewShortCode,
 	}
+
+	// Check if the new short code already exists for the owner
+	existingUrl, err := s.store.GetUrlByOwnerAndShortCode(authPayload.Owner, jsonReq.NewShortCode)
+	if err == nil && existingUrl.ShortCode != "" {
+		ctx.JSON(http.StatusConflict, errorResponse(errors.New("short code already exists for this owner")))
+		return
+	}
+
 	updatedUrl, err := s.store.TxUpdateShortCode(arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -135,15 +155,15 @@ func (s *Server) updateShortCode(ctx *gin.Context) {
 	}
 	resp := UrlResp{
 		ShortCode: updatedUrl.ShortCode,
-		LongUrl: updatedUrl.LongURL,
+		LongUrl:   updatedUrl.LongURL,
 	}
 	ctx.JSON(http.StatusOK, resp)
 }
 
 // GetUserUrlReq holds fields required for getting users urls
 type GetUserUrlsReq struct {
-	PageSize int `json:"page_size"`
-	PageID int `json:"page_id"`
+	PageSize int `form:"page_size" binding:"required"`
+	PageID int `form:"page_id" binding:"required"`
 }
 
 //getUserUrls server handler for getting user urls
@@ -163,7 +183,7 @@ func (s *Server) getUserUrls(ctx *gin.Context) {
 	arg := database.GetURLsArg{
 		Owner: authPayload.Owner,
 		Limit: req.PageSize,
-		Offset: req.PageID,
+		Offset: (req.PageID -1) * req.PageSize,
 	}
 	urls, err := s.store.GetURLs(arg)
 	if err != nil {
@@ -183,7 +203,7 @@ func (s *Server) getUserUrls(ctx *gin.Context) {
 
 func (s *Server) deleteUrl(ctx *gin.Context){
 	var req UpdateShortCodeReq
-	if err := ctx.ShouldBindJSON(&req); err != nil {
+	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -199,11 +219,19 @@ func (s *Server) deleteUrl(ctx *gin.Context){
 		Owner: authPayload.Owner,
 		ShortCode: req.ShortCode,
 	}
+
+	//error if shortcode doesn't belong to user
 	err := s.store.TxDeleteUrl(arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	resp := struct{ msg string `json:"msg"`}{msg: "successful"}
+	resp := struct{ 
+		Msg string `json:"msg"`
+		Link string `json:"link"` 
+		}{
+			Msg: "successful",
+			Link: ctx.Request.URL.String(),
+		}
 	ctx.JSON(http.StatusOK, resp)
 }
