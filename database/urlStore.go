@@ -35,14 +35,15 @@ func (s *Query) GetURL(args GetURLArgs) (URL, error) {
 	return urlRow, result.Error
 }
 
-//GetURLsArg hold fields for getting a list of urls from the database
+// GetURLsArg hold fields for getting a list of urls from the database
 type GetURLsArg struct {
-	Owner string `json:"owner"`
-	Limit int `json:"limit"`
-	Offset int `json:"offset"`
+	Owner  string `json:"owner"`
+	Limit  int    `json:"limit"`
+	Offset int    `json:"offset"`
 }
+
 // GetURLs make a query to database and returns urls from the offset to the limit.
-func (s *Query) GetURLs(args GetURLsArg) ([]URL, error){
+func (s *Query) GetURLs(args GetURLsArg) ([]URL, error) {
 	urls := []URL{}
 	result := s.db.Limit(args.Limit).Offset(args.Offset).Where("owner = ?", args.Owner).Find(&urls)
 
@@ -52,7 +53,6 @@ func (s *Query) GetURLs(args GetURLsArg) ([]URL, error){
 
 	return urls, nil
 }
-
 
 // TxUrlArgs hold fields needed to make an update and delete tx for a url row
 type TxUrlArgs struct {
@@ -96,7 +96,7 @@ func (s *Query) TxUpdateShortCode(args TxUrlArgs) (URL, error) {
 }
 
 // TxDeleteUrl a transaction to update the database removing a url row
-func(s *Query) TxDeleteUrl(args TxUrlArgs)(error){
+func (s *Query) TxDeleteUrl(args TxUrlArgs) error {
 	urlRow := URL{}
 	txErr := s.db.Transaction(func(tx *gorm.DB) error {
 		// Find the url row based on the owner
@@ -123,5 +123,6 @@ func(s *Query) TxDeleteUrl(args TxUrlArgs)(error){
 	}
 	return nil
 }
+
 //=====edit URL model to contain title and user generated shortcode
 //UPDATEURL should edit the title of the url, and the shortcode.
