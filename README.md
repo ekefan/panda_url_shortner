@@ -1,6 +1,6 @@
 # PANDA_URL_SHORTNER:
 
-Practicing CRUD and Restful api's
+Practicing CRUD and RESTful api's
 Backend service for a url_shortner...
 
 The following functions are allowed:
