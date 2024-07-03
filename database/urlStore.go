@@ -56,8 +56,9 @@ func (s *Query) GetURLs(args GetURLsArg) ([]URL, error) {
 
 // TxUrlArgs hold fields needed to make an update and delete tx for a url row
 type TxUrlArgs struct {
-	Owner     string `json:"owner"`
-	ShortCode string `json:"shortcode_update"`
+	Owner     string
+	CurrentShortCode string
+	ShortCode string 
 }
 
 // TxUpdateShortCode a transaction to update the short code off the url
@@ -65,7 +66,7 @@ type TxUrlArgs struct {
 func (s *Query) TxUpdateShortCode(args TxUrlArgs) (URL, error) {
 	urlRow := URL{}
 	txErr := s.db.Transaction(func(tx *gorm.DB) error {
-		result := tx.Model(&urlRow).Where("owner = ?", args.Owner).
+		result := tx.Model(&urlRow).Where("owner = ? AND short_code = ?", args.Owner, args.CurrentShortCode).
 			Updates(URL{ShortCode: args.ShortCode, UpdatedAt: time.Now()})
 
 		// check if the update query was successful
@@ -75,7 +76,7 @@ func (s *Query) TxUpdateShortCode(args TxUrlArgs) (URL, error) {
 
 		//check if the update query affected at least on row
 		if result.RowsAffected == 0 {
-			return fmt.Errorf("no rows affected, possibly invalid owner: %v", args.Owner)
+			return fmt.Errorf("no rows affected")
 		}
 
 		return nil
@@ -106,7 +107,7 @@ func (s *Query) TxDeleteUrl(args TxUrlArgs) error {
 		}
 
 		// Delete the url row based on the shortcode, owner and shortcodes are unique
-		result = tx.Where("short_code = ?", args.ShortCode).Delete(&urlRow)
+		result = tx.Where("owner = ? AND short_code = ?", args.Owner, args.ShortCode).Delete(&urlRow)
 		if result.Error != nil {
 			return result.Error
 		}
@@ -126,3 +127,13 @@ func (s *Query) TxDeleteUrl(args TxUrlArgs) error {
 
 //=====edit URL model to contain title and user generated shortcode
 //UPDATEURL should edit the title of the url, and the shortcode.
+
+
+func (s *Query) GetUrlByOwnerAndShortCode(owner string, shortCode string) (URL, error) {
+	var urlRow URL
+	result := s.db.Where("owner = ? AND short_code = ?", owner, shortCode).First(&urlRow)
+	if result.Error != nil {
+		return urlRow, result.Error
+	}
+	return urlRow, nil
+}
