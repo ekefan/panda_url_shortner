@@ -98,11 +98,12 @@ func (s *Server) goToURL(ctx *gin.Context) {
 	ctx.Redirect(http.StatusMovedPermanently, dbURL.LongURL)
 }
 
-
+// UpdateShortCodeReq holds field required for shortcode update
 type UpdateShortCodeReq struct{
 	ShortCode string `json:"shortcode_update"`
 }
 
+//UrlResp: holds fields required for update response
 type UrlResp struct {
 	ShortCode string `json:"shortcode"`
 	LongUrl string `json:"long_url"`
@@ -137,4 +138,44 @@ func (s *Server) updateShortCode(ctx *gin.Context) {
 		LongUrl: updatedUrl.LongURL,
 	}
 	ctx.JSON(http.StatusOK, resp)
+}
+
+// GetUserUrlReq holds fields required for getting users urls
+type GetUserUrlsReq struct {
+	PageSize int `json:"page_size"`
+	PageID int `json:"page_id"`
+}
+
+//getUserUrls server handler for getting user urls
+func (s *Server) getUserUrls(ctx *gin.Context) {
+	var req GetUserUrlsReq 
+	if err := ctx.ShouldBindQuery(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	payload := ctx.MustGet(authPayloadKey)
+	authPayload, ok := payload.(*authorize.Payload)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, 
+			errorResponse(errors.New("not authorized")))
+		return 
+	}
+	arg := database.GetURLsArg{
+		Owner: authPayload.Owner,
+		Limit: req.PageSize,
+		Offset: req.PageID,
+	}
+	urls, err := s.store.GetURLs(arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	urlResps := []UrlResp{}
+	for _, url := range urls {
+		urlResps = append(urlResps, UrlResp{
+			ShortCode: url.ShortCode, 
+			LongUrl: url.LongURL,
+		})
+	}
+	ctx.JSON(http.StatusOK, urlResps)
 }
